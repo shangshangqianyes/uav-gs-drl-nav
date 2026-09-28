@@ -42,12 +42,12 @@ echo "[OK] ros2_ws/src deployed"
 
 # --- 2) drl/ sources (keep venv/models/logs; nothing deleted) ---
 mkdir -p "$PX4/drl"
-for f in env_guided_astar.py env_unguided.py env_guided_fm2.py fm2_field.py \
-         curve_monitor_callback.py \
-         train_astar_ppo.py train_astar_sac.py train_ppo_only.py train_sac_only.py \
-         train_fm2_ppo.py \
-         eval_astar_ppo.py eval_ppo_only.py eval_sac_only.py eval_fm2_ppo.py \
-         export_policy.py bench_fm2_vs_astar.py requirements.txt; do
+for f in nav_env_astar.py nav_env_plain.py nav_env_fm2.py fastmarch_field.py \
+         tb_curve_monitor.py \
+         run_train_astar_ppo.py run_train_astar_sac.py run_train_ppo_plain.py run_train_sac_plain.py \
+         run_train_fm2_ppo.py \
+         run_eval_astar_ppo.py run_eval_ppo_plain.py run_eval_sac_plain.py run_eval_fm2_ppo.py \
+         policy_exporter.py planner_compare.py requirements.txt; do
   [[ -f "$REPO/drl/$f" ]] && cp -f "$REPO/drl/$f" "$PX4/drl/$f"
 done
 echo "[OK] drl sources deployed (venv/models/logs untouched)"

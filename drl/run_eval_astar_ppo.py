@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-eval_astar_ppo.py
+run_eval_astar_ppo.py
 
-Offline eval after training (2026-09-12): reuses train_astar_ppo.evaluate_model,
+Offline eval after training (2026-09-12): reuses run_train_astar_ppo.evaluate_model,
 with scenarios/seeds/weighting identical to the training-time PeriodicEvalCallback + final eval:
   - obs = 0/5/10 (runs episodes each, seed = base+7777+n_obs)
   - obstacle_density_15/20, narrow_passage, course_l_s (seed = base+7777+hash%10000)
@@ -11,7 +11,7 @@ with scenarios/seeds/weighting identical to the training-time PeriodicEvalCallba
   - weighted_score = weighted sum under EVAL_SCORE_WEIGHTS (comparable with historical runs)
 
 Usage (from the drl/ directory):
-  PYTHONUTF8=1 PYTHONHASHSEED=0 python eval_astar_ppo.py \
+  PYTHONUTF8=1 PYTHONHASHSEED=0 python run_eval_astar_ppo.py \
       --model ./models_ppo_2d/C2_dt05_v2_noeval/ppo_uav2d_final.zip \
       --vecnorm ./models_ppo_2d/C2_dt05_v2_noeval/vecnormalize.pkl --runs 100
 (PYTHONHASHSEED=0 pins hash() so seeds stay identical across invocations)
@@ -21,7 +21,7 @@ import argparse
 
 from stable_baselines3 import PPO
 
-from train_astar_ppo import (
+from run_train_astar_ppo import (
     EVAL_SCORE_WEIGHTS,
     TrainConfig,
     evaluate_model,

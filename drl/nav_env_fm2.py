@@ -2,8 +2,8 @@
 """
 2D UAV navigation env -- FM2 (Fast Marching Square) guided variant (2026-09-14).
 
-The only difference from env_guided_astar.py: the guidance path source is switched from A* to FM2
-(fm2_field.fm2_field_compute + extract_path):
+The only difference from nav_env_astar.py: the guidance path source is switched from A* to FM2
+(fastmarch_field.fm2_field_compute + extract_path):
 occupancy grid -> velocity map W (clearance saturation alpha / exponent beta) -> Eikonal arrival-time field T -> gradient-descent path.
 T depends only on (grid, goal), not on start -> cached per episode (reused on _fm2_t_key hit);
 replan (2.0s period) only re-runs the gradient extraction (~40x speedup, bit-identical to no caching).
@@ -23,7 +23,7 @@ from typing import List, Tuple, Optional, Dict, Any
 import math
 import numpy as np
 
-from fm2_field import extract_path, fm2_field_compute
+from fastmarch_field import extract_path, fm2_field_compute
 
 try:
     import gymnasium as gym

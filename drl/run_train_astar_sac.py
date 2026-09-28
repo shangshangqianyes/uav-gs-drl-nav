@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-train_astar_sac.py
+run_train_astar_sac.py
 
 SB3 SAC training + (optional) periodic/final evaluation + best model saving.
-Main training script: the train_astar_ppo.py skeleton ported to SAC (max-entropy off-policy).
+Main training script: the run_train_astar_ppo.py skeleton ported to SAC (max-entropy off-policy).
 
-Differences from the PPO version (train_astar_ppo.py, now the baseline):
+Differences from the PPO version (run_train_astar_ppo.py, now the baseline):
 - EntCoefScheduleCallback removed entirely: replaced by SAC's automatic entropy temperature (target_entropy="auto")
 - PPO-only elements removed: n_steps/n_epochs/clip_range/target_kl/gae_lambda/vf_coef/max_grad_norm/log_std_init,
   and the clip_range FloatSchedule override on resume (the lr_schedule override is kept: SAC.train() reads
@@ -17,13 +17,13 @@ Differences from the PPO version (train_astar_ppo.py, now the baseline):
 - EpisodeStatsCallback V/A/Q logging removed (rollout_buffer is PPO-only).
   Instead, SB3 automatically logs SAC actor_loss/critic_loss/ent_coef under train/*
 
-Curriculum check (2026-09-07): the curriculum in env_guided_astar.py can only "promote"
+Curriculum check (2026-09-07): the curriculum in nav_env_astar.py can only "promote"
 (100-episode window, thresholds 60/70/80/90%, no demotion) and starts at stage 0 (0~3 obstacles).
 Random-action collision failures during learning_starts (10k) only keep the curriculum at level 0
 and never demote it, so curriculum gating during the random phase is unnecessary (confirmed).
 
 Usage:
-  python3 train_astar_sac.py --do_eval --eval_runs 300 --eval_obstacles 0 5 10
+  python3 run_train_astar_sac.py --do_eval --eval_runs 300 --eval_obstacles 0 5 10
 """
 
 import os
@@ -50,8 +50,8 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback
 from stable_baselines3.common.utils import set_random_seed, FloatSchedule, update_learning_rate
 
-from env_guided_astar import UAVNav2DEnv
-from curve_monitor_callback import CurveMonitorCallback
+from nav_env_astar import UAVNav2DEnv
+from tb_curve_monitor import CurveMonitorCallback
 
 
 # --- Config ---

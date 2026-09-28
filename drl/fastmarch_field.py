@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-fm2_field.py -- FM2 (Fast Marching Square) guidance field, pure numpy (no scipy/numba).
+fastmarch_field.py -- FM2 (Fast Marching Square) guidance field, pure numpy (no scipy/numba).
 
 Two-pass structure (Garrido et al. 2007; Gomez et al. 2013; Valero-Gomez et al. 2013 IEEE RAM):
   1) Velocity map W: occupancy grid -> chamfer clearance distance field (m, iterated to
@@ -19,7 +19,7 @@ unreachable cells are filled with a wall-penalty value so interpolation stays fi
 everywhere). On stall, first run a discrete 8-neighbor argmin-T rescue, then fall back
 to [goal] (same failure semantics as A*).
 
-Machine-specific contract (env_guided_astar.py Sec.32): on this machine (i9-14900K +
+Machine-specific contract (nav_env_astar.py Sec.32): on this machine (i9-14900K +
 numpy 2.x + py3.13) numpy scalar indexing in hot loops causes access violations, so
 extraction converts fields to Python lists via .tolist() and does all bilinear reads
 in pure float. The module has no mutable global state (safe for 8-process

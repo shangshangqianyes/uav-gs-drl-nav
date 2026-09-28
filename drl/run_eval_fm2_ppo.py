@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-eval_fm2_ppo.py
+run_eval_fm2_ppo.py
 
-FM2 variant of eval_astar_ppo.py (2026-09-14): scenarios/seeds/weighting are identical
-(seed base +7777 / +8888, EVAL_SCORE_WEIGHTS); only the import comes from train_fm2_ppo,
+FM2 variant of run_eval_astar_ppo.py (2026-09-14): scenarios/seeds/weighting are identical
+(seed base +7777 / +8888, EVAL_SCORE_WEIGHTS); only the import comes from run_train_fm2_ppo,
 so evaluate_model builds the FM2-guided environment. Directly comparable with A*-PPO's 0.9167.
 
 Usage (from the drl/ directory):
-  PYTHONUTF8=1 PYTHONHASHSEED=0 python eval_fm2_ppo.py \
+  PYTHONUTF8=1 PYTHONHASHSEED=0 python run_eval_fm2_ppo.py \
       --model ./models_ppo_2d/FM2_C2_dt05_s42_noeval/ppo_uav2d_final.zip \
       --vecnorm ./models_ppo_2d/FM2_C2_dt05_s42_noeval/vecnormalize.pkl --runs 100
 """
@@ -26,7 +26,7 @@ if os.environ.get("PYTHONHASHSEED") != "0":
 
 from stable_baselines3 import PPO
 
-from train_fm2_ppo import (
+from run_train_fm2_ppo import (
     EVAL_SCORE_WEIGHTS,
     TrainConfig,
     evaluate_model,

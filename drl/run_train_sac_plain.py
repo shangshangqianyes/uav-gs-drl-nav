@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-train_sac_only.py
+run_train_sac_plain.py
 """
 
 import os
@@ -29,8 +29,8 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback
 from stable_baselines3.common.utils import set_random_seed, FloatSchedule, update_learning_rate
 
-from env_unguided import UAVNav2DEnv
-from curve_monitor_callback import CurveMonitorCallback
+from nav_env_plain import UAVNav2DEnv
+from tb_curve_monitor import CurveMonitorCallback
 
 
 # --- Config ---

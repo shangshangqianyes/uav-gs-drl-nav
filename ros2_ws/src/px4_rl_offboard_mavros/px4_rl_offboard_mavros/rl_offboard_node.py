@@ -26,7 +26,7 @@ try:
 except ImportError:
     _SCIPY_OK = False
 
-# FM2 (Fast Marching Square) guidance field -- in-package copy of drl/fm2_field.py (pure numpy, no external deps).
+# FM2 (Fast Marching Square) guidance field -- in-package copy of drl/fastmarch_field.py (pure numpy, no external deps).
 # Used only for nav_mode=fm2. If the import fails, only that mode is disabled (other modes unaffected).
 try:
     from .fm2_field import fm2_path as _fm2_path_fn
@@ -127,7 +127,7 @@ class RLOffboardNode(Node):
             ("smooth_bspline_s",               0.0),
             ("smooth_bspline_output_points",   50),
             ("smooth_bspline_skip_if_few_wps", 3),
-            # FM2 (nav_mode=fm2): same parameters as the drl/env_guided_fm2.py training env.
+            # FM2 (nav_mode=fm2): same parameters as the drl/nav_env_fm2.py training env.
             # cell_size reuses the /local_grid resolution (_grid_res) as-is (0.2m, close to training's 0.25m).
             ("fm2_alpha",                      1.0),
             ("fm2_beta",                       1.0),
@@ -858,7 +858,7 @@ class RLOffboardNode(Node):
                 self._plan_g_ij = g_ij
                 try:
                     if self.nav_mode == "fm2":
-                        # FM2 (the method proposed in this paper): same as the training env (env_guided_fm2),
+                        # FM2 (the method proposed in this paper): same as the training env (nav_env_fm2),
                         # use the raw path without LOS shortcut / B-spline post-processing.
                         path_xy = self._fm2_plan_path(px, py, gx, gy)
                         if path_xy:
@@ -929,7 +929,7 @@ class RLOffboardNode(Node):
     def _fm2_plan_path(self, px: float, py: float, gx: float, gy: float) -> Optional[List[Tuple[float, float]]]:
         """FM2 (nav_mode=fm2) path generation. /local_grid -> velocity field W -> Eikonal T -> gradient descent path.
 
-        Consistency with the drl/env_guided_fm2.py training env:
+        Consistency with the drl/nav_env_fm2.py training env:
           - input grid: 1=obstacle (>= occ_threshold), cell_size=/local_grid resolution (_grid_res)
           - no LOS shortcut / B-spline post-processing (not used in training either)
           - on failure the [goal] fallback is handled inside fm2_path -> same outcome as the caller-side straight fallback

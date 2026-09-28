@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-train_astar_ppo.py
+run_train_astar_ppo.py
 
 SB3 PPO training + (optional) periodic/final evaluation + best model saving.
 Advantage (GAE) / trust region (clip) updates are done by SB3 PPO. Q(s,a)=V+A logging.
 
 Usage:
-  python3 train_astar_ppo.py --do_eval --eval_runs 300 --eval_obstacles 0 5 10
+  python3 run_train_astar_ppo.py --do_eval --eval_runs 300 --eval_obstacles 0 5 10
 """
 
 import os
@@ -24,8 +24,8 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback
 from stable_baselines3.common.utils import set_random_seed, FloatSchedule
 
-from env_guided_astar import UAVNav2DEnv
-from curve_monitor_callback import CurveMonitorCallback
+from nav_env_astar import UAVNav2DEnv
+from tb_curve_monitor import CurveMonitorCallback
 import torch
 
 
@@ -665,7 +665,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--log_dir", type=str, default=None, help="TensorBoard log directory (default: ./logs_ppo_2d)")
     p.add_argument("--save_dir", type=str, default=None, help="model/checkpoint save directory (default: ./models_ppo_2d)")
 
-    # Fixed-point-count curve logging (same as train_astar_sac.py Sec.32): separate TB dir, writes only episode_reward/episode_length scalars
+    # Fixed-point-count curve logging (same as run_train_astar_sac.py Sec.32): separate TB dir, writes only episode_reward/episode_length scalars
     p.add_argument("--curve_log_dir", type=str, default=None,
                    help="fixed-point curve TB dir (only reward/ep_len scalars; disabled if not set)")
     p.add_argument("--curve_points", type=int, default=2000, help="target curve point count (default 2000, window mode only)")

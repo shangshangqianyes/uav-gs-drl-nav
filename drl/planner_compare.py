@@ -7,8 +7,8 @@ from typing import List, Tuple
 
 import numpy as np
 
-from env_guided_astar import UAVNav2DEnv as AstarEnv
-from env_guided_fm2 import UAVNav2DEnv as FM2Env
+from nav_env_astar import UAVNav2DEnv as AstarEnv
+from nav_env_fm2 import UAVNav2DEnv as FM2Env
 
 CELL = 0.25
 SCENARIOS = ("obstacle_density_15", "obstacle_density_20", "narrow_passage", "course_l_s")
@@ -53,7 +53,7 @@ def main() -> None:
 
     out_dir = os.path.abspath(args.out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    csv_path = os.path.join(out_dir, "bench_fm2_vs_astar.csv")
+    csv_path = os.path.join(out_dir, "planner_compare.csv")
 
     env_a = AstarEnv(eval_scenario=None)   # used only to obtain the A* planner
     env_f = FM2Env(eval_scenario=None)     # used only to obtain the FM2 planner

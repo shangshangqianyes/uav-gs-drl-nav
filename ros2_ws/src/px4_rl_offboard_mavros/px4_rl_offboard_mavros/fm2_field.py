@@ -19,7 +19,7 @@ unreachable cells are filled with a wall-penalty value so interpolation stays fi
 everywhere). On stall, first run a discrete 8-neighbor argmin-T rescue, then fall back
 to [goal] (same failure semantics as A*).
 
-Machine-specific contract (env_guided_astar.py Sec.32): on this machine (i9-14900K +
+Machine-specific contract (nav_env_astar.py Sec.32): on this machine (i9-14900K +
 numpy 2.x + py3.13) numpy scalar indexing in hot loops causes access violations, so
 extraction converts fields to Python lists via .tolist() and does all bilinear reads
 in pure float. The module has no mutable global state (safe for 8-process

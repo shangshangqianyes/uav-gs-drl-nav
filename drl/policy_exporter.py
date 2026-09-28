@@ -23,7 +23,7 @@ import torch
 from stable_baselines3 import SAC, PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
-from env_guided_astar import UAVNav2DEnv
+from nav_env_astar import UAVNav2DEnv
 
 
 # -----------------------------
@@ -52,7 +52,7 @@ def make_env(args: argparse.Namespace) -> DummyVecEnv:
     (fallback handling in case a constructor signature mismatch raises TypeError)
     """
     def _make() -> UAVNav2DEnv:
-        # Pass args to match training as closely as possible (adjust to env_guided_astar.py __init__ signature if needed)
+        # Pass args to match training as closely as possible (adjust to nav_env_astar.py __init__ signature if needed)
         kwargs: Dict[str, Any] = dict(
             obs_beams=args.obs_beams,
             max_range=args.max_range,
@@ -147,7 +147,7 @@ def export_norm_json(
 def env_norm_example(raw_obs: np.ndarray, args: argparse.Namespace) -> np.ndarray:
     """
     "Example" env_norm for checking the deployment pipeline.
-    Must match the observation construction in env_guided_astar.py.
+    Must match the observation construction in nav_env_astar.py.
     obs: lidar (n) + goal_rel body (2) = n+2
     """
     n = args.obs_beams
@@ -169,7 +169,7 @@ def env_norm_example(raw_obs: np.ndarray, args: argparse.Namespace) -> np.ndarra
 def main() -> None:
     p = argparse.ArgumentParser(description="Export SAC policy for ROS2/PX4 deployment")
     p.add_argument("--algo", type=str, default="sac", choices=["sac", "ppo"],
-                   help="Algorithm to export: sac (main training script train_astar_sac.py, default) / ppo (baseline train_astar_ppo.py)")
+                   help="Algorithm to export: sac (main training script run_train_astar_sac.py, default) / ppo (baseline run_train_astar_ppo.py)")
     p.add_argument("--model", type=str, required=True, help="Model path (.zip may be omitted; use the artifact matching the algorithm)")
     p.add_argument("--vecnorm", type=str, required=True, help="VecNormalize path (file saved via VecNormalize.save())")
     p.add_argument("--output_dir", type=str, default="./export", help="Output directory")

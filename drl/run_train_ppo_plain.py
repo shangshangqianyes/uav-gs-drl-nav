@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-train_ppo_only.py
+run_train_ppo_plain.py
 
-PPO-only ablation variant of train_astar_ppo.py. Training logic/hyperparameters/callbacks/eval
+PPO-only ablation variant of run_train_astar_ppo.py. Training logic/hyperparameters/callbacks/eval
 are identical to the parent; the only difference is that the env is imported from
-env_unguided.UAVNav2DEnv (baseline with the A* lookahead hybrid removed). Purpose: compare
+nav_env_plain.UAVNav2DEnv (baseline with the A* lookahead hybrid removed). Purpose: compare
 hybrid (A*+PPO) vs ppo_only.
 
 SB3 PPO training + automatic periodic/final evaluation + best model saving. Q estimates are
 logged as Q=V+A by definition.
 
 Usage example:
-  python3 train_ppo_only.py --do_eval --eval_runs 300 --eval_obstacles 0 5 10
+  python3 run_train_ppo_plain.py --do_eval --eval_runs 300 --eval_obstacles 0 5 10
 """
 
 import os
@@ -29,8 +29,8 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback
 from stable_baselines3.common.utils import set_random_seed, FloatSchedule
 
-from env_unguided import UAVNav2DEnv
-from curve_monitor_callback import CurveMonitorCallback
+from nav_env_plain import UAVNav2DEnv
+from tb_curve_monitor import CurveMonitorCallback
 import torch
 
 
@@ -667,7 +667,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--log_dir", type=str, default=None, help="TensorBoard log directory (default: ./logs_ppo_2d)")
     p.add_argument("--save_dir", type=str, default=None, help="model/checkpoint save directory (default: ./models_ppo_2d)")
 
-    # Fixed-point-count curve logging (same as train_astar_sac.py Sec.32): a separate TB directory writing only episode_reward/episode_length
+    # Fixed-point-count curve logging (same as run_train_astar_sac.py Sec.32): a separate TB directory writing only episode_reward/episode_length
     p.add_argument("--curve_log_dir", type=str, default=None,
                    help="TB directory for fixed-point-count curves (only the reward/ep_len scalars; disabled if unset)")
     p.add_argument("--curve_points", type=int, default=2000, help="target number of curve points (default 2000, window mode only)")

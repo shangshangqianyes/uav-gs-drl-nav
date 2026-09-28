@@ -20,13 +20,13 @@ Method variants (all trained 10M steps, seeds 42/43/44, reported as mean±std):
 
 | Variant | Guidance field | Training script | Offline eval script |
 |---------|----------------|-----------------|---------------------|
-| **FM²+PPO (main method)** | FM² velocity field | `train_fm2_ppo.py` | `eval_fm2_ppo.py` |
-| A\*+PPO | A\* grid shortest path | `train_astar_ppo.py` | `eval_astar_ppo.py` |
-| A\*+SAC | A\* grid shortest path | `train_astar_sac.py` | (training-time `--do_eval` output) |
-| PPO-only (ablation) | none | `train_ppo_only.py` | `eval_ppo_only.py` |
-| SAC-only (ablation) | none | `train_sac_only.py` | `eval_sac_only.py` |
+| **FM²+PPO (main method)** | FM² velocity field | `run_train_fm2_ppo.py` | `run_eval_fm2_ppo.py` |
+| A\*+PPO | A\* grid shortest path | `run_train_astar_ppo.py` | `run_eval_astar_ppo.py` |
+| A\*+SAC | A\* grid shortest path | `run_train_astar_sac.py` | (training-time `--do_eval` output) |
+| PPO-only (ablation) | none | `run_train_ppo_plain.py` | `run_eval_ppo_plain.py` |
+| SAC-only (ablation) | none | `run_train_sac_plain.py` | `run_eval_sac_plain.py` |
 
-The planner itself has a separate static benchmark: `bench_fm2_vs_astar.py`
+The planner itself has a separate static benchmark: `planner_compare.py`
 (path length / minimum clearance / planning time).
 
 ## Directory layout
@@ -34,12 +34,12 @@ The planner itself has a separate static benchmark: `bench_fm2_vs_astar.py`
 ```
 uav-gs-drl-nav/
 ├── drl/                  # 2D grid RL: envs, training, offline eval, policy export
-│   ├── env_guided_astar.py / env_guided_fm2.py / env_unguided.py   # the three envs
-│   ├── fm2_field.py     # FM² field computation (shared by training and ROS side)
+│   ├── nav_env_astar.py / nav_env_fm2.py / nav_env_plain.py   # the three envs
+│   ├── fastmarch_field.py     # FM² field computation (shared by training and ROS side)
 │   ├── train_*.py       # training entry points for the 5 method variants
 │   ├── eval_*.py        # offline eval (weighted score; see script header)
-│   ├── export_policy.py # export TorchScript policy + observation-normalization JSON
-│   ├── bench_fm2_vs_astar.py
+│   ├── policy_exporter.py # export TorchScript policy + observation-normalization JSON
+│   ├── planner_compare.py
 │   └── requirements.txt # pinned training venv (torch 2.9.1 + cu128)
 ├── ros2_ws/src/          # ROS 2 (colcon) workspace sources
 │   ├── px4_nav_perception/       # perception: point cloud -> 2D occupancy grid
@@ -83,26 +83,26 @@ px4docker                              # enter the container
 cd /home/dev/PX4-Autopilot/rl && source .venv/bin/activate
 
 # main method FM²+PPO (10M steps; run seeds 42/43/44 via --seed)
-python train_fm2_ppo.py --total_timesteps 10000000 \
+python run_train_fm2_ppo.py --total_timesteps 10000000 \
   --target_kl 0.1 --n_epochs 10 --log_interval 1
 
 # baselines / ablations (same protocol)
-python train_astar_ppo.py  --total_timesteps 10000000   # A*+PPO
-python train_astar_sac.py  --total_timesteps 10000000 --save_best --do_eval   # A*+SAC
-python train_ppo_only.py   --total_timesteps 10000000   # PPO-only
-python train_sac_only.py   --total_timesteps 10000000   # SAC-only
+python run_train_astar_ppo.py  --total_timesteps 10000000   # A*+PPO
+python run_train_astar_sac.py  --total_timesteps 10000000 --save_best --do_eval   # A*+SAC
+python run_train_ppo_plain.py   --total_timesteps 10000000   # PPO-only
+python run_train_sac_plain.py   --total_timesteps 10000000   # SAC-only
 ```
 
 ### 3. Offline evaluation and export
 
 ```bash
 # offline eval (weighted score; PYTHONHASHSEED=0 fixes the scenario-seed protocol)
-PYTHONUTF8=1 PYTHONHASHSEED=0 python eval_fm2_ppo.py \
+PYTHONUTF8=1 PYTHONHASHSEED=0 python run_eval_fm2_ppo.py \
   --model ./models_ppo_2d/<run_dir>/ppo_uav2d_final.zip \
   --vecnorm ./models_ppo_2d/<run_dir>/vecnormalize.pkl --runs 100
 
 # export TorchScript policy -> ROS deployment
-python export_policy.py --algo ppo \
+python policy_exporter.py --algo ppo \
   --model ./models_ppo_2d/<run_dir>/ppo_uav2d_final.zip \
   --vecnorm ./models_ppo_2d/<run_dir>/vecnormalize.pkl \
   --policy_filename policy_fm2_ts.pt --norm_filename obs_norm_fm2.json \
@@ -148,18 +148,18 @@ This repo is a cleaned-up, renamed subset of the research workspace `astar_ppo_h
 
 | Original file | Current file |
 |---------------|--------------|
-| `drl/env_2d_nav.py` | `drl/env_guided_astar.py` |
-| `drl/env_2d_nav_ppo_only.py` | `drl/env_unguided.py` |
-| `drl/env_2d_nav_fm2.py` | `drl/env_guided_fm2.py` |
-| `drl/train_ppo_2d.py` | `drl/train_astar_ppo.py` |
-| `drl/train_sac_2d.py` | `drl/train_astar_sac.py` |
-| `drl/train_ppo_2d_ppo_only.py` | `drl/train_ppo_only.py` |
-| `drl/train_sac_2d_ppo_only.py` | `drl/train_sac_only.py` |
-| `drl/train_ppo_2d_fm2.py` | `drl/train_fm2_ppo.py` |
-| `drl/eval_ppo_offline.py` | `drl/eval_astar_ppo.py` |
-| `drl/eval_ppo_only_offline.py` | `drl/eval_ppo_only.py` |
-| `drl/eval_sac_only_offline.py` | `drl/eval_sac_only.py` |
-| `drl/eval_fm2_offline.py` | `drl/eval_fm2_ppo.py` |
+| `drl/env_2d_nav.py` | `drl/nav_env_astar.py` |
+| `drl/env_2d_nav_ppo_only.py` | `drl/nav_env_plain.py` |
+| `drl/env_2d_nav_fm2.py` | `drl/nav_env_fm2.py` |
+| `drl/train_ppo_2d.py` | `drl/run_train_astar_ppo.py` |
+| `drl/train_sac_2d.py` | `drl/run_train_astar_sac.py` |
+| `drl/train_ppo_2d_ppo_only.py` | `drl/run_train_ppo_plain.py` |
+| `drl/train_sac_2d_ppo_only.py` | `drl/run_train_sac_plain.py` |
+| `drl/train_ppo_2d_fm2.py` | `drl/run_train_fm2_ppo.py` |
+| `drl/eval_ppo_offline.py` | `drl/run_eval_astar_ppo.py` |
+| `drl/eval_ppo_only_offline.py` | `drl/run_eval_ppo_plain.py` |
+| `drl/eval_sac_only_offline.py` | `drl/run_eval_sac_plain.py` |
+| `drl/eval_fm2_offline.py` | `drl/run_eval_fm2_ppo.py` |
 
 Training logs, model checkpoints, figures, and paper-writing material are not tracked;
 the full original workspace is backed up at

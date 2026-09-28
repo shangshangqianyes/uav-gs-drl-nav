@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-eval_ppo_only.py
+run_eval_ppo_plain.py
 
 Offline eval after PPO-only (C2_PPOonly_10M_noeval) training (2026-09-13):
-reuses train_ppo_only.evaluate_model (env_unguided, no A*),
-with scenarios/seeds/weights identical to the hybrid eval_astar_ppo.py for direct comparison:
+reuses run_train_ppo_plain.evaluate_model (nav_env_plain, no A*),
+with scenarios/seeds/weights identical to the hybrid run_eval_astar_ppo.py for direct comparison:
   - obs = 0/5/10 (runs episodes each, seed = base+7777+n_obs)
   - obstacle_density_15/20, narrow_passage, course_l_s (seed = base+7777+hash%10000)
   - sensor_noise (excluded from weighting, seed = base+8888, num_obstacles=2)
   - weighted_score = weighted sum under EVAL_SCORE_WEIGHTS
 
 Usage (from the drl/ directory):
-  PYTHONUTF8=1 PYTHONHASHSEED=0 python eval_ppo_only.py
+  PYTHONUTF8=1 PYTHONHASHSEED=0 python run_eval_ppo_plain.py
 (PYTHONHASHSEED=0 pins hash() so seeds stay identical across invocations)
 """
 
@@ -20,7 +20,7 @@ import argparse
 
 from stable_baselines3 import PPO
 
-from train_ppo_only import (
+from run_train_ppo_plain import (
     EVAL_SCORE_WEIGHTS,
     TrainConfig,
     evaluate_model,
