@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>px4_nav_perception</name>
+  <version>0.0.0</version>
+  <description>PX4 + ROS2 perception package for LiDAR</description>
+  <maintainer email="akswosla1@example.com">akswosla</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- Basic ROS 2 Python node execution -->
+  <depend>rclpy</depend>
+
+  <!-- Message types -->
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <!-- TF transforms -->
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+
+  <!-- Parameter/launch support -->
+  <depend>ament_index_python</depend>
+
+  <!-- Test dependencies -->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,31 @@
+grid_fuser:
+  ros__parameters:
+    # Fixed map: covers military_airfield (50x50) -- 261x0.2=52.2m, origin symmetric at +/-26.1m
+    resolution: 0.20
+    width: 261
+    height: 261
+    frame_id: "odom"
+    robot_frame: "base_link"
+    rolling_window: false
+
+    lidar_topic: "/scan"
+    publish_rate: 5.0
+    max_range: 10.0
+    max_range_no_hit_epsilon: 0.08   # if r>=max_range-eps, treat as "open" and do not mark the end cell occupied (prevents fake rings)
+
+    # Log-odds: mitigate single-beam mislabeling (motion distortion during rotation) by accumulating multiple observations
+    use_log_odds: true
+    prob_hit: 0.85        # l_hit ~ +1.792
+    prob_miss: 0.35       # l_miss ~ -0.619
+    clamp_min: -2.0
+    clamp_max: 3.0
+    occupied_thresh: 0.55 # must be >0.5 (at 0.5 all unobserved cells become occupied -> entire map black / A* fails)
+    decay_rate: 0.001     # must be DOUBLE (0 parses as INT -> declare_parameter conflict). No decay
+    occupied_value: 100
+    free_value: 0
+    unknown_value: -1
+
+    # rolling_window=false: origin = southwest corner, symmetric at +/-26.1m
+    origin_x: -26.1
+    origin_y: -26.1
+    publish_dilation_cells: 1   # dilation radius (cells) for occupied before publishing, 8-connected, 0=disabled

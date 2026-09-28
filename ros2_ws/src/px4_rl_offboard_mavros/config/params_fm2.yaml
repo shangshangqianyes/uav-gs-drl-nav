@@ -1,0 +1,11 @@
+# FM2+PPO mode (the proposed method of this paper, 2026-09)
+# - FM2 (Fast Marching Square) guidance-field path instead of A* (aligned with drl/env_guided_fm2.py training)
+# - Uses policy_fm2_ts.pt / obs_norm_fm2.json (FM2_C2_dt05_s42_noeval 10M final)
+# - Training consistency: replan 2.0s / no LOS shortcut/B-spline (not applied in the rl_offboard_node fm2 branch)
+rl_offboard_node:
+  ros__parameters:
+    nav_mode: "fm2"
+    replan_period: 2.0        # aligned with the training env replan period (A* hybrid deployment uses 1.0s)
+    fm2_alpha: 1.0            # FM2 saturation distance (m) -- main experiment alpha=1.0
+    fm2_beta: 1.0
+    # Uses the share/models/ default filename (policy_fm2_ts.pt) -> automatic if path is not specified

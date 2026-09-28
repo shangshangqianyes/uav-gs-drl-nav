@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="iris_rplidar_depth">
+
+    <!-- Base Iris -->
+    <include>
+      <uri>model://iris</uri>
+    </include>
+
+    <!-- Depth camera -->
+    <!-- Position: 0.2m forward and 0.1m up from base_link to avoid detecting the drone body -->
+    <include>
+      <uri>model://depth_camera</uri>
+      <pose>0.2 0 0.1 0 0 0</pose>
+    </include>
+    <joint name="depth_camera_joint" type="fixed">
+      <parent>iris::base_link</parent>
+      <child>depth_camera::link</child>
+    </joint>
+
+    <!-- RPLidar -->
+    <!-- Position: raised 0.25m above base_link to avoid detecting the drone body (self-occlusion) -->
+    <link name="rplidar_link">
+      <pose>0 0 0.25 0 0 0</pose>
+
+      <!-- Inertial (added: lightweight lidar values) -->
+      <inertial>
+        <mass>0.05</mass> <!-- 50 g -->
+        <inertia>
+          <ixx>1e-5</ixx>
+          <iyy>1e-5</iyy>
+          <izz>2e-5</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+
+      <sensor name="rplidar" type="ray">
+        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.12</min>
+            <max>12.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </ray>
+
+        <plugin name="gazebo_ros_rplidar" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <namespace>/</namespace>
+            <remapping>~/out:=/scan</remapping>
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+          <frame_name>rplidar_link</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+
+    <joint name="rplidar_fix" type="fixed">
+      <parent>iris::base_link</parent>
+      <child>rplidar_link</child>
+    </joint>
+
+  </model>
+</sdf>

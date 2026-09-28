@@ -1,0 +1,6 @@
+# SAC standalone mode (for comparison experiments, 2026-09)
+# - Same control logic as nav_mode=ppo (inference toward the final goal direction); only the policy is SAC (export format is algorithm-agnostic)
+# - policy_sac_ts.pt / obs_norm_sac.json (models_sac_ppo_only_10M_noeval 10M final)
+rl_offboard_node:
+  ros__parameters:
+    nav_mode: "ppo"

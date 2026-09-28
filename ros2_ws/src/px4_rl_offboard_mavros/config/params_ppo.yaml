@@ -1,0 +1,6 @@
+# PPO standalone mode (for comparison experiments)
+# - No A*; PPO-only inference toward the final goal direction
+# - Uses policy_ppo_ts.pt / obs_norm_ppo.json (world_size=20 normalization)
+rl_offboard_node:
+  ros__parameters:
+    nav_mode: "ppo"

@@ -1,0 +1,18 @@
+course_goal_publisher:
+  ros__parameters:
+    frame_id: "odom"
+    default_course: "R"              # R or L
+    spawn_enu: [0.0, 0.0, 0.83]      # odom origin = Gazebo spawn (sitl_run.sh)
+
+    # Active coordinates (ENU relative to spawn). When changing worlds, copy from the reference below.
+    # building.world (50x50 high-density): spawn(0,0) --HOMING +X 5m--> home(5,0,4) --NAV building cluster--> goal(-23,23,4).
+    home_xyz: [5.0, 0.0, 4.0]
+    goal_R: [-23.0, 23.0, 4.0]
+    goal_L: [-23.0, 23.0, 4.0]
+
+    # Per-world reference (cruise z=4.0):
+    #   obstacle_course.world  (20x20):              home[0,8,4]  goal_R[8,-8.2,4]  goal_L[-8,-8.2,4]
+    #   military_airfield.world(50x50, obstacle h=8): home[0,0,4]  goal_R[20,20,4]   goal_L[-18,-20,4]
+    #   maze.world            (22x22, easy maze):     home[0,-9,4] goal_R[19,9,4]    goal_L[19,9,4]
+    #   building.world        (50x50, high-density building cluster): home[5,0,4] goal_R[-23,23,4]  goal_L[-23,23,4]
+    #   Note: building has a single goal -- goal_R/goal_L are identical. Climb in the +X 5m corridor from spawn(0,0) to home(5,0).

@@ -1,0 +1,66 @@
+# px4_rl_offboard_mavros -- RL Offboard Control (MAVROS ENU frame)
+
+rl_offboard_node:
+  ros__parameters:
+    # Topics
+    mavros_state_topic: "/mavros/state"
+    mavros_odom_topic: "/mavros/local_position/odom"
+    mavros_setpoint_topic: "/mavros/setpoint_velocity/cmd_vel_unstamped"  # ENU velocity
+    scan_topic: "/scan"
+    goal_topic: "/planner/goal"
+    homing_done_topic: "/planner/homing_done"
+    wait_for_homing: true
+
+    # Single-flow homing (option A): rl_offboard_node flies directly to home_xyz, then switches to the goal.
+    # course_goal_publisher no longer handles position setpoints/OFFBOARD/ARM.
+    # Coordinates must match the values in goals.yaml (ENU relative to spawn).
+    home_xyz: [5.0, 0.0, 4.0]            # homing target (world coordinates), converted relative to spawn_enu.
+    spawn_enu: [0.0, 0.0, 0.83]          # odom origin = Gazebo spawn (same as goals.yaml)
+    home_tolerance: 0.3                  # home 2D arrival tolerance (m)
+    home_timeout_sec: 20.0               # forced switch to NAVIGATING if home arrival fails within this time
+
+    odom_timeout_sec: 0.3   # ~6x margin for 22Hz odom
+    scan_timeout_sec: 0.5   # 5x margin for 10Hz scan
+    goal_radius: 1.5        # hover within this radius (prevents overshoot)
+
+    # nav_mode: hybrid(A* lookahead + PPO) | astar(standalone) | ppo(standalone, for comparison)
+    #   models: hybrid->policy_hybrid_ts.pt, ppo->policy_ppo_ts.pt (+ corresponding obs_norm_*.json)
+    nav_mode: "hybrid"
+    grid_topic: "/local_grid"
+    occ_threshold: 50
+    allow_diag: true
+    replan_period: 1.0      # A* replanning period (A* ~8ms/call, independent thread)
+    rl_front_deg: 90.0
+    lidar_range_min_override: 0.35   # guards against self-detection (body/arm ~0.25m): returns below this -> max_range
+
+    emergency_brake_dist: 0.0     # 0 = disabled (grid avoidance is sufficient)
+    emergency_brake_deg: 30.0
+
+    planner_max_yaw_rate: 1.0     # yaw-rate cap for astar only. Same across modes (ppo/hybrid use max_yaw_rate=1.0)
+    hybrid_lookahead_dist_m: 1.0  # path lookahead distance (astar/hybrid wp tracking + emergency-brake turn direction). Smaller = more accurate corner direction
+
+    # path post-processing (LOS shortcut + B-spline)
+    smooth_bspline_enabled: true
+    smooth_bspline_s: 0.0             # 0 = interpolation (passes through waypoints)
+    smooth_bspline_output_points: 50
+    wp_advance_search_window: 10
+    smooth_bspline_skip_if_few_wps: 3
+    shortcut_los_clearance_cells: 1   # must match astar_min_inflation_cells
+    astar_min_inflation_cells: 1      # x resolution >= path-wall clearance. Automatic fallback for narrow passages
+
+    # altitude hold
+    enable_altitude_hold: true
+    altitude_hold_margin: 0.1
+    altitude_hold_gain: 0.4      # vz = gain*(target-current), clipped to +/-0.5
+
+    # OFFBOARD
+    setpoint_rate_hz: 20.0       # >=2Hz required (10-20 recommended)
+    pre_setpoint_sec: 2.0
+
+    policy_path: ""              # if empty, per-nav_mode default (share/.../models/)
+    obs_norm_path: ""
+
+    # env_params (must match training)
+    obs_beams: 64
+    max_range: 10.0
+    world_size: 50.0    # building.world arena = 50m

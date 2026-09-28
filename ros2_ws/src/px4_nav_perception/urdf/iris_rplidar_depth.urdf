@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<robot name="iris_rplidar_depth">
+
+  <!-- Main body -->
+  <link name="base_link">
+    <inertial>
+      <mass value="1.2"/> <!-- approximate value -->
+      <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.03"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.30 0.30 0.10"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <!-- z=-0.05: extend the body downward only -> no collision above (toward the LiDAR) -->
+      <origin xyz="0 0 -0.05" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.30 0.30 0.10"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- LiDAR -->
+  <link name="rplidar_link">
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="1e-4" ixy="0" ixz="0" iyy="1e-4" iyz="0" izz="2e-4"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.06"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.06"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Depth camera -->
+  <link name="camera_link">
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="4e-4" ixy="0" ixz="0" iyy="2e-4" iyz="0" izz="2e-4"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.09 0.025 0.025"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.2 0.4 0.8 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.09 0.025 0.025"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Fixed joints: match the placement used in the SDF -->
+  <joint name="rplidar_mount" type="fixed">
+    <!-- LiDAR at z=0.25m above the body (prevents self-occlusion by the drone body) -->
+    <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="rplidar_link"/>
+  </joint>
+
+  <joint name="camera_mount" type="fixed">
+    <!-- Camera at x=0.2m forward, z=0.1m (prevents detecting the drone body) -->
+    <origin xyz="0.20 0 0.10" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+</robot>

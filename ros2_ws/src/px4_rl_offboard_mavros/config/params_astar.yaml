@@ -1,0 +1,6 @@
+# A* standalone mode (for comparison experiments)
+# - No PPO; uses only the A* global planner
+# - No need to load policy / obs_norm
+rl_offboard_node:
+  ros__parameters:
+    nav_mode: "astar"
